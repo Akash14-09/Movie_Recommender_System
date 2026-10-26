@@ -1,4 +1,8 @@
 # 🎬 Movie Recommender System (TMDB Dataset)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-15803D?style=for-the-badge&logo=streamlit&logoColor=white)](https://movierecommendersystem-kqrsomm2wee9x52amtt477.streamlit.app/)
+
+  
+1:29 PM
 
 A content-based movie recommender system using cosine similarity that suggests the top 5 most similar movies based on a selected film. Built with Python, Pandas, and Scikit-Learn on the TMDB 5000 Movie Dataset, and deployed as an interactive web application with Streamlit.
 
