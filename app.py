@@ -19,7 +19,6 @@ def fetch_poster(movie_id):
         pass
     return "https://via.placeholder.com/500x750?text=Poster+Not+Available"
 
-# Your exact helper functions from notebook86c26b4f17.ipynb
 def convert(text):
     L = []
     for i in ast.literal_eval(text):
@@ -39,15 +38,30 @@ def collapse(L):
         L1.append(i.replace(" ", ""))
     return L1
 
-@st.cache_resource
+@st.cache_resource(show_spinner="Loading Movie Recommender Model...")
 def load_data_and_similarity():
+    # 1. Check if pre-built pickle files exist
     if os.path.exists('model/movie_list.pkl') and os.path.exists('model/similarity.pkl'):
         movies = pickle.load(open('model/movie_list.pkl', 'rb'))
         similarity = pickle.load(open('model/similarity.pkl', 'rb'))
         return movies, similarity
 
-    movies = pd.read_csv('tmdb_5000_movies.csv')
-    credits = pd.read_csv('tmdb_5000_credits.csv')
+
+    if os.path.exists('tmdb_5000_movies.csv'):
+        movies = pd.read_csv('tmdb_5000_movies.csv')
+    elif os.path.exists('tmdb_5000_movies.zip'):
+        movies = pd.read_csv('tmdb_5000_movies.zip')
+    else:
+        movies_url = "https://huggingface.co/datasets/AiresPucrs/tmdb-5000-movies/resolve/main/tmdb_5000_movies.csv"
+        movies = pd.read_csv(movies_url)
+
+    if os.path.exists('tmdb_5000_credits.csv'):
+        credits = pd.read_csv('tmdb_5000_credits.csv')
+    elif os.path.exists('tmdb_5000_credits.zip'):
+        credits = pd.read_csv('tmdb_5000_credits.zip')
+    else:
+        credits_url = "https://huggingface.co/datasets/AiresPucrs/tmdb-5000-movies/resolve/main/tmdb_5000_credits.csv"
+        credits = pd.read_csv(credits_url)
 
     movies = movies.merge(credits, on='title')
     movies = movies[['movie_id', 'title', 'overview', 'genres', 'keywords', 'cast', 'crew']]
@@ -82,6 +96,7 @@ def recommend(movie):
     recommended_movie_names = []
     recommended_movie_posters = []
     for i in distances[1:6]:
+        # fetch the movie poster
         movie_id = movies.iloc[i[0]].movie_id
         recommended_movie_posters.append(fetch_poster(movie_id))
         recommended_movie_names.append(movies.iloc[i[0]].title)
@@ -116,7 +131,6 @@ if st.button('Show Recommendation'):
     with col5:
         st.text(recommended_movie_names[4])
         st.image(recommended_movie_posters[4])
-
 
 
 
